@@ -1,37 +1,35 @@
 package post
 
 import (
-	"database/sql"
-	"fmt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"time"
 )
 
 var PostMgr = PostManager{}
 
 type Post struct {
-	ID         int64
+	ID         int64 `gorm:"primary_key;autoIncrement"`
 	Title      string
 	Content    string
 	CreateTime time.Time
 	UpdateTime time.Time
 }
 type PostManager struct {
-	dataBase *sql.DB
+	dataBase *gorm.DB
 }
 
 func (PostMgr *PostManager) Init() {
 	var err error
-	PostMgr.dataBase, err = sql.Open("sqlite3", "./data/post.db")
+	PostMgr.dataBase, err = gorm.Open(sqlite.Open("./data/posts.db"), &gorm.Config{})
 	if err != nil {
-		fmt.Println(err)
+		panic("failed to connect database")
 	}
-	_, err = PostMgr.dataBase.Exec("CREATE TABLE IF NOT EXISTS Posts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, Content TEXT, CreateTime DATETIME, UpdateTime DATETIME)")
-	if err != nil {
-		fmt.Println(err)
-	}
+	PostMgr.dataBase.AutoMigrate(&Post{})
 }
 func (PostMgr *PostManager) CloseDatabase() {
-	PostMgr.dataBase.Close()
+	sqlDB, _ := PostMgr.dataBase.DB()
+	sqlDB.Close()
 }
 func (PostMgr *PostManager) ViewPost() {
 	//TODO
@@ -47,4 +45,8 @@ func (PostMgr *PostManager) DeletePost(postID int64) {
 }
 func (PostMgr *PostManager) ListPost() {
 	//TODO
+}
+func (PostMgr *PostManager) GetPostCount() int {
+	//TODO
+	return 0
 }

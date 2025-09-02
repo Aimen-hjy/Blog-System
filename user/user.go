@@ -1,8 +1,9 @@
 package user
 
 import (
-	"database/sql"
 	"fmt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var UserMgr = UserManager{}
@@ -14,27 +15,26 @@ type User struct {
 }
 
 type UserManager struct {
-	dataBase    *sql.DB
+	dataBase    *gorm.DB
 	currentUser *User
 }
 
 func (UsrMgr *UserManager) Init() {
 	var err error
-	UsrMgr.dataBase, err = sql.Open("sqlite3", "./data/user.db")
+	UsrMgr.dataBase, err = gorm.Open(sqlite.Open("./data/user.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = UsrMgr.dataBase.Exec("CREATE TABLE IF NOT EXISTS Users (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Password TEXT)")
-	if err != nil {
-		fmt.Println(err)
-	}
+	UsrMgr.dataBase.AutoMigrate(&User{})
 }
 
 func (UsrMgr *UserManager) CloseDatabase() {
-	UsrMgr.dataBase.Close()
+	sqlDB, _ := UsrMgr.dataBase.DB()
+	sqlDB.Close()
 }
 
-func (UsrMgr *UserManager) Register(username string, password string) (err error) {
+func (UsrMgr *UserManager) Register(username string, password string) bool {
+
 	//TODO
 }
 func (UsrMgr *UserManager) Login(username string, password string) (err error) {
@@ -47,5 +47,8 @@ func (UsrMgr *UserManager) ChangePassword(oldPassword string, newPassword string
 	//TODO
 }
 func (UsrMgr *UserManager) GetCurrentUser() *User {
+	//TODO
+}
+func (UsrMgr *UserManager) GetUserCount() int {
 	//TODO
 }
