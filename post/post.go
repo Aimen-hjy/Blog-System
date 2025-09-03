@@ -48,11 +48,11 @@ func (PostMgr *PostManager) ViewPost(postID int64) (string, bool) {
 	}
 	return post.Content, true
 }
-func (PostMgr *PostManager) CreatePost(content string) (int64, bool) {
+func (PostMgr *PostManager) CreatePost(title, content string) (int64, bool) {
 	var maxID int64
 	PostMgr.dataBase.Model(&Post{}).Select("MAX(id)").Scan(&maxID)
 	id := maxID + 1
-	newPost := Post{ID: id, Content: content, CreateTime: time.Now(), UpdateTime: time.Now(), UserID: user.UserMgr.GetCurrentUser().ID}
+	newPost := Post{ID: id, Title: title, Content: content, CreateTime: time.Now(), UpdateTime: time.Now(), UserID: user.UserMgr.GetCurrentUser().ID}
 	result := PostMgr.dataBase.Create(&newPost)
 	if result.Error != nil {
 		fmt.Println("Error during creating post:", result.Error)
@@ -60,7 +60,7 @@ func (PostMgr *PostManager) CreatePost(content string) (int64, bool) {
 	}
 	return newPost.ID, true
 } //return postID, success
-func (PostMgr *PostManager) UpdatePost(postID int64, newContent string) bool {
+func (PostMgr *PostManager) UpdatePost(postID int64, newtitle, newContent string) bool {
 	var post Post
 	post.ID = postID
 	result := PostMgr.dataBase.First(&post)
@@ -72,7 +72,12 @@ func (PostMgr *PostManager) UpdatePost(postID int64, newContent string) bool {
 		fmt.Println("It's not your post")
 		return false
 	}
-	post.Content = newContent
+	if newtitle != "" {
+		post.Title = newtitle
+	}
+	if newContent != "" {
+		post.Content = newContent
+	}
 	post.UpdateTime = time.Now()
 	PostMgr.dataBase.Save(&post)
 	return true
@@ -102,4 +107,13 @@ func (PostMgr *PostManager) GetPostCount() int64 {
 	var count int64
 	PostMgr.dataBase.Model(&Post{}).Count(&count)
 	return count
+}
+func searchPostsByTitle(title string) []Post {
+	//TODO
+}
+func searchPostsByCreateTime() []Post {
+	//TODO
+}
+func searchPostsByUpdateTime() []Post {
+	//TODO
 }
