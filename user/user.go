@@ -1,7 +1,6 @@
 package user
 
 import (
-	"blogSystem/post"
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -39,6 +38,7 @@ func (UsrMgr *UserManager) Register(username string, password string) bool {
 	var count int64
 	UsrMgr.dataBase.Model(&User{}).Count(&count)
 	result := UsrMgr.dataBase.Where("name = ?", username).First(&newUser)
+	newUser.ID = count + 1
 	if result.Error == gorm.ErrRecordNotFound {
 		UsrMgr.dataBase.Create(&newUser)
 		fmt.Println("Registering new user:", username)
@@ -52,6 +52,10 @@ func (UsrMgr *UserManager) Register(username string, password string) bool {
 	}
 }
 func (UsrMgr *UserManager) Login(username string, password string) bool {
+	if UsrMgr.currentUser != nil && UsrMgr.currentUser.ID != 0 {
+		fmt.Println("A user is already logged in:", UsrMgr.currentUser.Name)
+		return false
+	}
 	var user User
 	result := UsrMgr.dataBase.Where("name = ?", username).First(&user)
 	if result.Error == gorm.ErrRecordNotFound {
@@ -67,6 +71,7 @@ func (UsrMgr *UserManager) Login(username string, password string) bool {
 		return false
 	}
 	UsrMgr.currentUser = &user
+	fmt.Println("Logged in:", username)
 	return true
 }
 func (UsrMgr *UserManager) Logout() bool {
@@ -77,6 +82,7 @@ func (UsrMgr *UserManager) Logout() bool {
 	UsrMgr.currentUser.ID = 0
 	UsrMgr.currentUser.Name = ""
 	UsrMgr.currentUser.Password = ""
+	fmt.Println("Logged out.")
 	return true
 }
 func (UsrMgr *UserManager) ChangePassword(old_password, new_password string) bool {
@@ -88,8 +94,9 @@ func (UsrMgr *UserManager) ChangePassword(old_password, new_password string) boo
 		fmt.Println("Old password is incorrect.")
 		return false
 	}
-	UsrMgr.dataBase.Model(&post.Post{}).Where("name = ?", UsrMgr.currentUser.Name).Update("password", new_password)
+	UsrMgr.dataBase.Model(&User{}).Where("name = ?", UsrMgr.currentUser.Name).Update("password", new_password)
 	UsrMgr.currentUser.Password = new_password
+	fmt.Println("Password changed successfully.")
 	return true
 }
 func (UsrMgr *UserManager) GetCurrentUser() *User {

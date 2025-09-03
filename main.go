@@ -25,6 +25,10 @@ func main() {
 			user.UserMgr.Login(username, password)
 		} else if op == "logout" {
 			user.UserMgr.Logout()
+		} else if op == "changePassword" {
+			var oldPassword, newPassword string
+			fmt.Scan(&oldPassword, &newPassword)
+			user.UserMgr.ChangePassword(oldPassword, newPassword)
 		} else if op == "createPost" {
 
 		} else if op == "updatePost" {

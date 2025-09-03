@@ -24,5 +24,5 @@
 ```
 - 用户注册: register <用户名> <密码>
 - 用户登录: login <用户名> <密码>
-- 修改密码: change_password <旧密码> <新密码>
+- 修改密码: changePassword <旧密码> <新密码>
 ```
