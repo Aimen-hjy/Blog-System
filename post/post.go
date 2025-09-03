@@ -1,6 +1,8 @@
 package post
 
 import (
+	"blogSystem/user"
+	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"time"
@@ -14,6 +16,7 @@ type Post struct {
 	Content    string
 	CreateTime time.Time
 	UpdateTime time.Time
+	UserID     int64 `gorm:"index"`
 }
 type PostManager struct {
 	dataBase *gorm.DB
@@ -31,22 +34,72 @@ func (PostMgr *PostManager) CloseDatabase() {
 	sqlDB, _ := PostMgr.dataBase.DB()
 	sqlDB.Close()
 }
-func (PostMgr *PostManager) ViewPost() {
-	//TODO
+func (PostMgr *PostManager) ViewPost(postID int64) (string, bool) {
+	var post Post
+	post.ID = postID
+	result := PostMgr.dataBase.First(&post)
+	if result.Error == gorm.ErrRecordNotFound {
+		fmt.Println("Post Not Found")
+		return "", false
+	}
+	if post.UserID != user.UserMgr.GetCurrentUser().ID {
+		fmt.Println("It's not your post")
+		return "", false
+	}
+	return post.Content, true
 }
-func (PostMgr *PostManager) CreatePost(post Post) {
-	//TODO
+func (PostMgr *PostManager) CreatePost(content string) (int64, bool) {
+	var maxID int64
+	PostMgr.dataBase.Model(&Post{}).Select("MAX(id)").Scan(&maxID)
+	id := maxID + 1
+	newPost := Post{ID: id, Content: content, CreateTime: time.Now(), UpdateTime: time.Now(), UserID: user.UserMgr.GetCurrentUser().ID}
+	result := PostMgr.dataBase.Create(&newPost)
+	if result.Error != nil {
+		fmt.Println("Error during creating post:", result.Error)
+		return 0, false
+	}
+	return newPost.ID, true
+} //return postID, success
+func (PostMgr *PostManager) UpdatePost(postID int64, newContent string) bool {
+	var post Post
+	post.ID = postID
+	result := PostMgr.dataBase.First(&post)
+	if result.Error == gorm.ErrRecordNotFound {
+		fmt.Println("Post Not Found")
+		return false
+	}
+	if post.UserID != user.UserMgr.GetCurrentUser().ID {
+		fmt.Println("It's not your post")
+		return false
+	}
+	post.Content = newContent
+	post.UpdateTime = time.Now()
+	PostMgr.dataBase.Save(&post)
+	return true
 }
-func (PostMgr *PostManager) UpdatePost(post Post) {
-	//TODO
+func (PostMgr *PostManager) DeletePost(postID int64) bool {
+	var post Post
+	post.ID = postID
+	result := PostMgr.dataBase.First(&post)
+	if result.Error == gorm.ErrRecordNotFound {
+		fmt.Println("Post Not Found")
+		return false
+	}
+	if post.UserID != user.UserMgr.GetCurrentUser().ID {
+		fmt.Println("It's not your post")
+		return false
+	}
+	PostMgr.dataBase.Delete(&post)
+	fmt.Println("Post Deleted")
+	return true
 }
-func (PostMgr *PostManager) DeletePost(postID int64) {
-	//TODO
+func (PostMgr *PostManager) ListPost() []Post {
+	var res []Post
+	PostMgr.dataBase.Where("user_id = ?", user.UserMgr.GetCurrentUser().ID).Find(&res)
+	return res
 }
-func (PostMgr *PostManager) ListPost() {
-	//TODO
-}
-func (PostMgr *PostManager) GetPostCount() int {
-	//TODO
-	return 0
+func (PostMgr *PostManager) GetPostCount() int64 {
+	var count int64
+	PostMgr.dataBase.Model(&Post{}).Count(&count)
+	return count
 }

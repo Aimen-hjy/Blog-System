@@ -40,9 +40,10 @@ func main() {
 		} else if op == "listPost" {
 
 		} else if op == "exit" {
-
+			break
 		} else {
 			log.Println("Error: unknown operation")
 		}
 	}
+	return
 }
