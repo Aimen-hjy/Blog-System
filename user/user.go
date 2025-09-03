@@ -1,6 +1,7 @@
 package user
 
 import (
+	"blogSystem/post"
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -34,21 +35,68 @@ func (UsrMgr *UserManager) CloseDatabase() {
 }
 
 func (UsrMgr *UserManager) Register(username string, password string) bool {
-
-	//TODO
+	newUser := User{Name: username, Password: password}
+	var count int64
+	UsrMgr.dataBase.Model(&User{}).Count(&count)
+	result := UsrMgr.dataBase.Where("name = ?", username).First(&newUser)
+	if result.Error == gorm.ErrRecordNotFound {
+		UsrMgr.dataBase.Create(&newUser)
+		fmt.Println("Registering new user:", username)
+		return true
+	} else if result.Error != nil {
+		fmt.Println("Error during registration:", result.Error)
+		return false
+	} else {
+		fmt.Println("Username already exists:", username)
+		return false
+	}
 }
-func (UsrMgr *UserManager) Login(username string, password string) (err error) {
-	//TODO
+func (UsrMgr *UserManager) Login(username string, password string) bool {
+	var user User
+	result := UsrMgr.dataBase.Where("name = ?", username).First(&user)
+	if result.Error == gorm.ErrRecordNotFound {
+		fmt.Println("User not found:", username)
+		return false
+	}
+	if result.Error != nil {
+		fmt.Println("Error during login:", result.Error)
+		return false
+	}
+	if user.Password != password {
+		fmt.Println("Wrong password:", user.Password)
+		return false
+	}
+	UsrMgr.currentUser = &user
+	return true
 }
-func (UsrMgr *UserManager) Logout() {
-	//TODO
+func (UsrMgr *UserManager) Logout() bool {
+	if UsrMgr.currentUser == nil || UsrMgr.currentUser.ID == 0 {
+		fmt.Println("No user is currently logged in.")
+		return false
+	}
+	UsrMgr.currentUser.ID = 0
+	UsrMgr.currentUser.Name = ""
+	UsrMgr.currentUser.Password = ""
+	return true
 }
-func (UsrMgr *UserManager) ChangePassword(oldPassword string, newPassword string) (err error) {
-	//TODO
+func (UsrMgr *UserManager) ChangePassword(old_password, new_password string) bool {
+	if UsrMgr.currentUser == nil || UsrMgr.currentUser.ID == 0 {
+		fmt.Println("No user is currently logged in.")
+		return false
+	}
+	if UsrMgr.currentUser.Password != old_password {
+		fmt.Println("Old password is incorrect.")
+		return false
+	}
+	UsrMgr.dataBase.Model(&post.Post{}).Where("name = ?", UsrMgr.currentUser.Name).Update("password", new_password)
+	UsrMgr.currentUser.Password = new_password
+	return true
 }
 func (UsrMgr *UserManager) GetCurrentUser() *User {
-	//TODO
+	return UsrMgr.currentUser
 }
-func (UsrMgr *UserManager) GetUserCount() int {
-	//TODO
+func (UsrMgr *UserManager) GetUserCount() int64 {
+	var count int64
+	UsrMgr.dataBase.Model(&User{}).Count(&count)
+	return count
 }

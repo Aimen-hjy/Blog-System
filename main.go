@@ -16,11 +16,15 @@ func main() {
 		var op string
 		fmt.Scan(&op)
 		if op == "register" {
-
+			var username, password string
+			fmt.Scan(&username, &password)
+			user.UserMgr.Register(username, password)
 		} else if op == "login" {
-
+			var username, password string
+			fmt.Scan(&username, &password)
+			user.UserMgr.Login(username, password)
 		} else if op == "logout" {
-
+			user.UserMgr.Logout()
 		} else if op == "createPost" {
 
 		} else if op == "updatePost" {
