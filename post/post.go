@@ -108,12 +108,22 @@ func (PostMgr *PostManager) GetPostCount() int64 {
 	PostMgr.dataBase.Model(&Post{}).Count(&count)
 	return count
 }
-func searchPostsByTitle(title string) []Post {
-	//TODO
+func (PostMgr *PostManager) SearchPostsByTitle(title string) []Post {
+	var posts []Post
+	PostMgr.dataBase.Where("title = ? AND user_id = ?", title, user.UserMgr.GetCurrentUser().ID).Find(&posts)
+	return posts
 }
-func searchPostsByCreateTime() []Post {
-	//TODO
+func (PostMgr *PostManager) SearchPostsByCreateTime(year, month, day int) []Post {
+	var posts []Post
+	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
+	next_date := date.AddDate(0, 0, 1)
+	PostMgr.dataBase.Where("create_time >= ? AND create_time < ?", date, next_date).Find(&posts)
+	return posts
 }
-func searchPostsByUpdateTime() []Post {
-	//TODO
+func (PostMgr *PostManager) SearchPostsByUpdateTime(year, month, day int) []Post {
+	var posts []Post
+	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
+	next_date := date.AddDate(0, 0, 1)
+	PostMgr.dataBase.Where("update_time >= ? AND update_time < ?", date, next_date).Find(&posts)
+	return posts
 }

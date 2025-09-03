@@ -94,6 +94,45 @@ func main() {
 			for _, p := range res {
 				fmt.Println(p)
 			}
+		} else if op == "searchPost" {
+			var keyword string
+			fmt.Scan(&keyword)
+			if keyword == "-t" {
+				var title string
+				fmt.Scan(&title)
+				res := post.PostMgr.SearchPostsByTitle(title)
+				if len(res) == 0 {
+					fmt.Println("No posts found with the given title.")
+					continue
+				}
+				for _, p := range res {
+					fmt.Println(p)
+				}
+			} else if keyword == "-ct" {
+				var year, month, day int
+				fmt.Scan(&year, &month, &day)
+				res := post.PostMgr.SearchPostsByCreateTime(year, month, day)
+				if len(res) == 0 {
+					fmt.Println("No posts found with the given creation date.")
+					continue
+				}
+				for _, p := range res {
+					fmt.Println(p)
+				}
+			} else if keyword == "-ut" {
+				var year, month, day int
+				fmt.Scan(&year, &month, &day)
+				res := post.PostMgr.SearchPostsByUpdateTime(year, month, day)
+				if len(res) == 0 {
+					fmt.Println("No posts found with the given update date.")
+					continue
+				}
+				for _, p := range res {
+					fmt.Println(p)
+				}
+			} else {
+				log.Println("Error: unknown search option")
+			}
 		} else if op == "exit" {
 			break
 		} else {

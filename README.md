@@ -30,6 +30,6 @@
 - 更新文章: updatePost <文章ID> (-t <新标题>) (-c <新内容>)
 - 删除文章: deletePost <文章ID>
 - 查看文章列表: listPost
-- 查询文章: searchPost <查询参数> [查询值] (查询参数可选值: -t,-ct,-ut)
+- 查询文章: searchPost <查询参数> [查询值] (查询参数可选值: -t,-ct,-ut)(time精度为天)
 - 查看单篇文章: viewPost <文章ID>
 ```
