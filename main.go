@@ -44,7 +44,7 @@ func main() {
 			if len(fields) == 3 {
 				id, err := strconv.Atoi(fields[0])
 				if err != nil {
-					fmt.Println("Error: invalid post ID")
+					log.Println("Error: invalid post ID")
 					continue
 				}
 				arg := fields[1]
@@ -55,13 +55,13 @@ func main() {
 					newContent := fields[2]
 					post.PostMgr.UpdatePost(int64(id), "", newContent)
 				} else {
-					fmt.Println("Error: unknown argument")
+					log.Println("Error: unknown argument")
 					continue
 				}
 			} else if len(fields) == 5 {
 				id, err := strconv.Atoi(fields[0])
 				if err != nil {
-					fmt.Println("Error: invalid post ID")
+					log.Println("Error: invalid post ID")
 					continue
 				}
 				arg1 := fields[1]
@@ -92,7 +92,7 @@ func main() {
 		} else if op == "listPost" {
 			res := post.PostMgr.ListPost()
 			for _, p := range res {
-				fmt.Println(p)
+				log.Println(p)
 			}
 		} else if op == "searchPost" {
 			var keyword string
@@ -102,18 +102,18 @@ func main() {
 				fmt.Scan(&title)
 				res := post.PostMgr.SearchPostsByTitle(title)
 				if len(res) == 0 {
-					fmt.Println("No posts found with the given title.")
+					log.Println("No posts found with the given title.")
 					continue
 				}
 				for _, p := range res {
-					fmt.Println(p)
+					log.Println(p)
 				}
 			} else if keyword == "-ct" {
 				var year, month, day int
 				fmt.Scan(&year, &month, &day)
 				res := post.PostMgr.SearchPostsByCreateTime(year, month, day)
 				if len(res) == 0 {
-					fmt.Println("No posts found with the given creation date.")
+					log.Println("No posts found with the given creation date.")
 					continue
 				}
 				for _, p := range res {
@@ -124,16 +124,17 @@ func main() {
 				fmt.Scan(&year, &month, &day)
 				res := post.PostMgr.SearchPostsByUpdateTime(year, month, day)
 				if len(res) == 0 {
-					fmt.Println("No posts found with the given update date.")
+					log.Println("No posts found with the given update date.")
 					continue
 				}
 				for _, p := range res {
-					fmt.Println(p)
+					log.Println(p)
 				}
 			} else {
 				log.Println("Error: unknown search option")
 			}
 		} else if op == "exit" {
+			log.Println("Exiting...")
 			break
 		} else {
 			log.Println("Error: unknown operation")

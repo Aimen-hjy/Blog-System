@@ -2,9 +2,9 @@ package post
 
 import (
 	"blogSystem/user"
-	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
@@ -39,13 +39,14 @@ func (PostMgr *PostManager) ViewPost(postID int64) (string, bool) {
 	post.ID = postID
 	result := PostMgr.dataBase.First(&post)
 	if result.Error == gorm.ErrRecordNotFound {
-		fmt.Println("Post Not Found")
+		log.Println("Post Not Found")
 		return "", false
 	}
 	if post.UserID != user.UserMgr.GetCurrentUser().ID {
-		fmt.Println("It's not your post")
+		log.Println("It's not your post")
 		return "", false
 	}
+	log.Println("Post Viewed:", post)
 	return post.Content, true
 }
 func (PostMgr *PostManager) CreatePost(title, content string) (int64, bool) {
@@ -55,9 +56,10 @@ func (PostMgr *PostManager) CreatePost(title, content string) (int64, bool) {
 	newPost := Post{ID: id, Title: title, Content: content, CreateTime: time.Now(), UpdateTime: time.Now(), UserID: user.UserMgr.GetCurrentUser().ID}
 	result := PostMgr.dataBase.Create(&newPost)
 	if result.Error != nil {
-		fmt.Println("Error during creating post:", result.Error)
+		log.Println("Error during creating post:", result.Error)
 		return 0, false
 	}
+	log.Println("Post created:", newPost)
 	return newPost.ID, true
 } //return postID, success
 func (PostMgr *PostManager) UpdatePost(postID int64, newtitle, newContent string) bool {
@@ -65,11 +67,11 @@ func (PostMgr *PostManager) UpdatePost(postID int64, newtitle, newContent string
 	post.ID = postID
 	result := PostMgr.dataBase.First(&post)
 	if result.Error == gorm.ErrRecordNotFound {
-		fmt.Println("Post Not Found")
+		log.Println("Post Not Found")
 		return false
 	}
 	if post.UserID != user.UserMgr.GetCurrentUser().ID {
-		fmt.Println("It's not your post")
+		log.Println("It's not your post")
 		return false
 	}
 	if newtitle != "" {
@@ -80,6 +82,7 @@ func (PostMgr *PostManager) UpdatePost(postID int64, newtitle, newContent string
 	}
 	post.UpdateTime = time.Now()
 	PostMgr.dataBase.Save(&post)
+	log.Println("Post updated:", post)
 	return true
 }
 func (PostMgr *PostManager) DeletePost(postID int64) bool {
@@ -87,20 +90,21 @@ func (PostMgr *PostManager) DeletePost(postID int64) bool {
 	post.ID = postID
 	result := PostMgr.dataBase.First(&post)
 	if result.Error == gorm.ErrRecordNotFound {
-		fmt.Println("Post Not Found")
+		log.Println("Post Not Found")
 		return false
 	}
 	if post.UserID != user.UserMgr.GetCurrentUser().ID {
-		fmt.Println("It's not your post")
+		log.Println("It's not your post")
 		return false
 	}
 	PostMgr.dataBase.Delete(&post)
-	fmt.Println("Post Deleted")
+	log.Println("Post Deleted")
 	return true
 }
 func (PostMgr *PostManager) ListPost() []Post {
 	var res []Post
 	PostMgr.dataBase.Where("user_id = ?", user.UserMgr.GetCurrentUser().ID).Find(&res)
+	log.Println("Post List")
 	return res
 }
 func (PostMgr *PostManager) GetPostCount() int64 {
@@ -111,6 +115,7 @@ func (PostMgr *PostManager) GetPostCount() int64 {
 func (PostMgr *PostManager) SearchPostsByTitle(title string) []Post {
 	var posts []Post
 	PostMgr.dataBase.Where("title = ? AND user_id = ?", title, user.UserMgr.GetCurrentUser().ID).Find(&posts)
+	log.Println("Search by title:", title)
 	return posts
 }
 func (PostMgr *PostManager) SearchPostsByCreateTime(year, month, day int) []Post {
@@ -118,6 +123,7 @@ func (PostMgr *PostManager) SearchPostsByCreateTime(year, month, day int) []Post
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
 	next_date := date.AddDate(0, 0, 1)
 	PostMgr.dataBase.Where("create_time >= ? AND create_time < ?", date, next_date).Find(&posts)
+	log.Println("Search by create time:", date)
 	return posts
 }
 func (PostMgr *PostManager) SearchPostsByUpdateTime(year, month, day int) []Post {
@@ -125,5 +131,6 @@ func (PostMgr *PostManager) SearchPostsByUpdateTime(year, month, day int) []Post
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
 	next_date := date.AddDate(0, 0, 1)
 	PostMgr.dataBase.Where("update_time >= ? AND update_time < ?", date, next_date).Find(&posts)
+	log.Println("Search by update time:", date)
 	return posts
 }
