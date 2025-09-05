@@ -5,13 +5,56 @@ import (
 	"blogSystem/user"
 	"bufio"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
 )
 
+func indexHandler(c *gin.Context) {
+	c.Redirect(http.StatusFound, "/login")
+	//TODO:Remember account
+}
+func loginGetHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", gin.H{})
+}
+func loginPostHandler(c *gin.Context) {
+	option := c.PostForm("option")
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	if option == "login" {
+		if user.UserMgr.Login(username, password) {
+			//TODO: jump to personal home page
+		} else {
+			c.HTML(http.StatusOK, "login.html", gin.H{"Name": username, "Password": password, "Error": "Invalid username and password."})
+		}
+	} else {
+		c.Redirect(http.StatusFound, "/register")
+	}
+}
+func registerPostHandler(c *gin.Context) {
+
+}
+func registerGetHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "register.html", gin.H{})
+}
 func main() {
+	r := gin.Default()
+	r.LoadHTMLGlob("template/*")
+	r.Static("/static", "./static")
+	r.GET("/", indexHandler)
+	r.GET("/login", loginGetHandler)
+	r.POST("/login", loginPostHandler)
+	r.POST("/register", registerPostHandler)
+	r.GET("/register", registerGetHandler)
+	r.GET("signin.css", func(c *gin.Context) {})
+	r.Run(":8080")
+	return
+}
+
+func cmd() {
 	post.PostMgr.Init()
 	defer post.PostMgr.CloseDatabase()
 	user.UserMgr.Init()
@@ -140,5 +183,4 @@ func main() {
 			log.Println("Error: unknown operation")
 		}
 	}
-	return
 }
