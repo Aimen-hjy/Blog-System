@@ -22,11 +22,11 @@ func loginGetHandler(c *gin.Context) {
 }
 func loginPostHandler(c *gin.Context) {
 	option := c.PostForm("option")
-	username := c.PostForm("username")
+	username := c.PostForm("name")
 	password := c.PostForm("password")
 	if option == "login" {
 		if user.UserMgr.Login(username, password) {
-			//TODO: jump to personal home page
+			c.Header("Refresh", "3;url=/dashboard")
 		} else {
 			c.HTML(http.StatusOK, "login.html", gin.H{"Name": username, "Password": password, "Error": "Invalid username and password."})
 		}
@@ -35,12 +35,27 @@ func loginPostHandler(c *gin.Context) {
 	}
 }
 func registerPostHandler(c *gin.Context) {
-
+	name := c.PostForm("name")
+	password := c.PostForm("password")
+	if user.UserMgr.Register(name, password) {
+		c.Header("Refresh", "3;url=/login")
+		c.HTML(http.StatusOK, "register.html", gin.H{"Success": "Register successfully! Redirecting to login page in 3 seconds..."})
+	} else {
+		c.HTML(http.StatusOK, "register.html", gin.H{"Name": name, "Password": password, "Error": "Username already exists."})
+	}
 }
 func registerGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.html", gin.H{})
 }
+func dashboradGetHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
+	//TODO:Dashboard
+}
 func main() {
+	post.PostMgr.Init()
+	defer post.PostMgr.CloseDatabase()
+	user.UserMgr.Init()
+	defer user.UserMgr.CloseDatabase()
 	r := gin.Default()
 	r.LoadHTMLGlob("template/*")
 	r.Static("/static", "./static")
@@ -49,7 +64,8 @@ func main() {
 	r.POST("/login", loginPostHandler)
 	r.POST("/register", registerPostHandler)
 	r.GET("/register", registerGetHandler)
-	r.GET("signin.css", func(c *gin.Context) {})
+	r.GET("dashboard", dashboradGetHandler)
+
 	r.Run(":8080")
 	return
 }
