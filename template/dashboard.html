@@ -3,8 +3,44 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-</head>>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/dashboard.css" rel="stylesheet">
+</head>
+
 <body>
-<h1>Welcome</h1>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0">Search blog</a>
+
+    <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="searchOptionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="searchOptionLabel">By id</span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="searchOptionsDropdown">
+            <li><a class="dropdown-item" value="t">By title</a></li>
+            <li><a class="dropdown-item" value="ct">By create time</a></li>
+            <li><a class="dropdown-item" value="ut">By update time</a></li>
+        </ul>
+    </div>
+
+    <div class="input-group w-100">
+        <input type="hidden" name="searchType" id="searchTypeInput" value="">
+        <input class="form-control form-control-dark" type="text" name="searchInput" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Search</button>
+    </div>
+
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="#">Log out</a>
+        </li>
+    </ul>
+</nav>
 </body>
-</html>>
+</html>

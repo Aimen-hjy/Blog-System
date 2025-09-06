@@ -47,6 +47,10 @@ func registerPostHandler(c *gin.Context) {
 func registerGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.html", gin.H{})
 }
+func logoutGetHandler(c *gin.Context) {
+	user.UserMgr.Logout()
+	c.Redirect(http.StatusFound, "/login")
+}
 func dashboradGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	//TODO:Dashboard
@@ -65,6 +69,7 @@ func main() {
 	r.POST("/register", registerPostHandler)
 	r.GET("/register", registerGetHandler)
 	r.GET("dashboard", dashboradGetHandler)
+	r.GET("/logout", logoutGetHandler)
 
 	r.Run(":8080")
 	return
