@@ -72,6 +72,9 @@ func dashboradGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	//TODO:Dashboard
 }
+func blogGetHandler(c *gin.Context) {
+	//TODO:Blog page
+}
 func main() {
 	post.PostMgr.Init()
 	defer post.PostMgr.CloseDatabase()
