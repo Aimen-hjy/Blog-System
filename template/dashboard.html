@@ -30,17 +30,50 @@
         </ul>
     </div>
 
-    <div class="input-group w-100">
+    <form class="input-group w-100" method="post">
         <input type="hidden" name="searchType" id="searchTypeInput" value="">
         <input class="form-control form-control-dark" type="text" name="searchInput" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-light" type="submit">Search</button>
-    </div>
+    </form>
 
+    <!-- Log out 按钮和隐藏表单 -->
+    <form id="logoutForm" method="post" action="/logout" style="display:none;"></form>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-            <a class="nav-link" href="#">Log out</a>
+            <a class="nav-link" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Log out</a>
         </li>
     </ul>
 </nav>
+<script>
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            // 设置隐藏 input 的 value
+            document.getElementById('searchTypeInput').value = this.getAttribute('value');
+            // 同时更新按钮显示文本
+            document.getElementById('searchOptionLabel').textContent = this.textContent;
+        });
+    });
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/blog">
+                            My Blogs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/changepassword">
+                            Change Password
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
 </body>
 </html>

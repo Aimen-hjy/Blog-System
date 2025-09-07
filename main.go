@@ -47,6 +47,23 @@ func registerPostHandler(c *gin.Context) {
 func registerGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.html", gin.H{})
 }
+func changePasswordGetHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "changepassword.html", gin.H{})
+}
+func changePasswordPostHandler(c *gin.Context) {
+	oldPassword := c.PostForm("oldpassword")
+	newPassword := c.PostForm("newpassword")
+	confirmPassword := c.PostForm("confirmpassword")
+	if newPassword != confirmPassword {
+		c.HTML(http.StatusOK, "changepassword.html", gin.H{"Error": "The two new passwords do not match."})
+		return
+	}
+	if user.UserMgr.ChangePassword(oldPassword, newPassword) {
+		c.HTML(http.StatusOK, "changepassword.html", gin.H{"Success": "Password changed successfully!"})
+	} else {
+		c.HTML(http.StatusOK, "changepassword.html", gin.H{"Error": "Old password is incorrect."})
+	}
+}
 func logoutGetHandler(c *gin.Context) {
 	user.UserMgr.Logout()
 	c.Redirect(http.StatusFound, "/login")
@@ -70,6 +87,8 @@ func main() {
 	r.GET("/register", registerGetHandler)
 	r.GET("dashboard", dashboradGetHandler)
 	r.GET("/logout", logoutGetHandler)
+	r.GET("/changepassword", changePasswordGetHandler)
+	r.POST("/changepassword", changePasswordPostHandler)
 
 	r.Run(":8080")
 	return
