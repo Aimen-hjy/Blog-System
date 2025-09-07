@@ -64,7 +64,7 @@ func changePasswordPostHandler(c *gin.Context) {
 		c.HTML(http.StatusOK, "changepassword.html", gin.H{"Error": "Old password is incorrect."})
 	}
 }
-func logoutGetHandler(c *gin.Context) {
+func logoutPostHandler(c *gin.Context) {
 	user.UserMgr.Logout()
 	c.Redirect(http.StatusFound, "/login")
 }
@@ -89,7 +89,7 @@ func main() {
 	r.POST("/register", registerPostHandler)
 	r.GET("/register", registerGetHandler)
 	r.GET("dashboard", dashboradGetHandler)
-	r.GET("/logout", logoutGetHandler)
+	r.POST("/logout", logoutPostHandler)
 	r.GET("/changepassword", changePasswordGetHandler)
 	r.POST("/changepassword", changePasswordPostHandler)
 

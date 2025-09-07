@@ -61,8 +61,8 @@
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="/blog">
-                            My Blogs
+                        <a class="nav-link" href="/createpost">
+                            Create Post
                         </a>
                     </li>
                     <li class="nav-item">
@@ -73,6 +73,24 @@
                 </ul>
             </div>
         </nav>
+
+        <div class="container mt-4">
+            <div class="row">
+                {{range .Posts}}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{.Title}}</h5>
+                            <p class="card-text text-truncate">{{.Content}}</p>
+                        </div>
+                        <div class="card-footer text-muted small">
+                            创建时间：{{.CreateTime.Format "2006-01-02 15:04"}}
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        </div>
     </div>
 </div>
 </body>
