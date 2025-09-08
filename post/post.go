@@ -18,10 +18,24 @@ type Post struct {
 	UpdateTime time.Time
 	UserID     int64 `gorm:"index"`
 }
+type PostInfo struct {
+	ID         int64
+	Title      string
+	CreateTime string
+	UpdateTime string
+}
 type PostManager struct {
 	dataBase *gorm.DB
 }
 
+func (post Post) ToPostInfo() PostInfo {
+	return PostInfo{
+		ID:         post.ID,
+		Title:      post.Title,
+		CreateTime: post.CreateTime.Format("2006-01-02 15:04:05"),
+		UpdateTime: post.UpdateTime.Format("2006-01-02 15:04:05"),
+	}
+}
 func (PostMgr *PostManager) Init() {
 	var err error
 	PostMgr.dataBase, err = gorm.Open(sqlite.Open("./data/posts.db"), &gorm.Config{})

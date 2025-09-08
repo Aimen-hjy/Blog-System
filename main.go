@@ -68,9 +68,15 @@ func logoutPostHandler(c *gin.Context) {
 	user.UserMgr.Logout()
 	c.Redirect(http.StatusFound, "/login")
 }
-func dashboradGetHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
-	//TODO:Dashboard
+func dashboardGetHandler(c *gin.Context) {
+	Posts := post.PostMgr.ListPost()
+	PostInfo := make([]post.PostInfo, len(Posts))
+	for index, post_ := range Posts {
+		PostInfo[index] = post_.ToPostInfo()
+	}
+	c.HTML(http.StatusOK, "dashboard.html", gin.H{
+		"Posts": PostInfo,
+	})
 }
 func createGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "createpost.html", gin.H{})
@@ -103,7 +109,7 @@ func main() {
 	r.POST("/login", loginPostHandler)
 	r.POST("/register", registerPostHandler)
 	r.GET("/register", registerGetHandler)
-	r.GET("dashboard", dashboradGetHandler)
+	r.GET("dashboard", dashboardGetHandler)
 	r.POST("/logout", logoutPostHandler)
 	r.GET("/changepassword", changePasswordGetHandler)
 	r.POST("/changepassword", changePasswordPostHandler)

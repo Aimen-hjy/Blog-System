@@ -57,40 +57,47 @@
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="margin-top:56px;">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="/createpost">
-                            Create Post
-                        </a>
+                        <a class="nav-link active" href="/dashboard">My Blog</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/changepassword">
-                            Change Password
-                        </a>
+                        <a class="nav-link" href="/createpost">Create Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/changepassword">Change Password</a>
                     </li>
                 </ul>
             </div>
         </nav>
-
-        <div class="container mt-4">
-            <div class="row">
-                {{range .Posts}}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{.Title}}</h5>
-                            <p class="card-text text-truncate">{{.Content}}</p>
-                        </div>
-                        <div class="card-footer text-muted small">
-                            创建时间：{{.CreateTime.Format "2006-01-02 15:04"}}
-                        </div>
-                    </div>
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h1 class="mb-4">My blog</h1>
+            <!-- 这里放你的帖子内容渲染部分 -->
+            {{if .Posts}}
+            {{range .Posts}}
+            <form method="post">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{.Title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">ID:{{.ID}}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">Create time{{.CreateTime}}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">Update time:{{.UpdateTime}}</h6>
+                    <button type="submit" name="edit" value="{{.ID}}" class="btn btn-primary">Edit</button>
+                    <button type="submit" name="delete" value="{{.ID}}" class="btn btn-outline-secondary ms-2">Delete</button>
                 </div>
-                {{end}}
             </div>
-        </div>
+            </form>
+            {{end}}
+            {{else}}
+            <div class="alert alert-warning" role="alert">
+                No blog Found.
+            </div>
+            {{end}}
+        </main>
     </div>
 </div>
 </body>
