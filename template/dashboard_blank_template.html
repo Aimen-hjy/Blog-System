@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0">Search blog</a>
+
+    <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="searchOptionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="searchOptionLabel">By id</span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="searchOptionsDropdown">
+            <li><a class="dropdown-item" value="t">By title</a></li>
+            <li><a class="dropdown-item" value="ct">By create time</a></li>
+            <li><a class="dropdown-item" value="ut">By update time</a></li>
+        </ul>
+    </div>
+
+    <form class="input-group w-100" method="post">
+        <input type="hidden" name="searchType" id="searchTypeInput" value="">
+        <input class="form-control form-control-dark" type="text" name="searchInput" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Search</button>
+    </form>
+
+    <!-- Log out 按钮和隐藏表单 -->
+    <form id="logoutForm" method="post" action="/logout" style="display:none;"></form>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Log out</a>
+        </li>
+    </ul>
+</nav>
+<script>
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            // 设置隐藏 input 的 value
+            document.getElementById('searchTypeInput').value = this.getAttribute('value');
+            // 同时更新按钮显示文本
+            document.getElementById('searchOptionLabel').textContent = this.textContent;
+        });
+    });
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="margin-top:56px;">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">My Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/createpost">Create Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/changepassword">Change Password</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+    </div>
+</div>
+</body>
+</html>
