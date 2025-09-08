@@ -84,6 +84,7 @@ func dashboardPostHandler(c *gin.Context) {
 	if edit == "" {
 		id, _ := strconv.Atoi(delete_)
 		post.PostMgr.DeletePost(int64(id))
+		c.Redirect(http.StatusFound, "/dashboard")
 	} else {
 		id, _ := strconv.Atoi(edit)
 		c.Redirect(http.StatusFound, fmt.Sprintf("/editpost?id=%d", id))
