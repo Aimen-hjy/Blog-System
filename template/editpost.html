@@ -65,7 +65,7 @@
                         <a class="nav-link" href="/dashboard">My Blog</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/createpost">Create Post</a>
+                        <a class="nav-link" href="/createpost">Create Post</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/changepassword">Change Password</a>
@@ -75,7 +75,7 @@
         </nav>
         <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top:56px;">
             <!-- 这里放你的帖子内容渲染部分 -->
-            <h1 class="mb-4">Create blog</h1>
+            <h1 class="mb-4">Edit blog</h1>
 
             <!-- 定义表单 -->
             <form method="POST" class="col-md-8">
@@ -83,7 +83,7 @@
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <!-- name="title" 是给后端用的key -->
-                    <input type="text" class="form-control" id="title" name="title" placeholder="{{.Title}}" required>
+                    <input type="text" class="form-control" id="title" name="title" value="{{.Title}}" required>
                 </div>
 
                 <!-- 内容输入框 (大文本框) -->
@@ -103,9 +103,10 @@
                         }
                     }, 3000);
                 </script>
-                {{else}}
+                {{end}}
+                {{if .Success}}
                 <div class= "alert alert-success" role="alert" id="successAlert">
-                    Create blog successfully!
+                    {{.Success}}
                 </div>
                 <script>
                     setTimeout(function() {

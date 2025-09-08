@@ -75,12 +75,11 @@
         </nav>
         <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <h1 class="mb-4">My blog</h1>
             <!-- 这里放你的帖子内容渲染部分 -->
             {{if .Posts}}
             {{range .Posts}}
             <form method="post">
-            <div class="card mb-3">
+            <div class="card mb-2 mt-1">
                 <div class="card-body">
                     <h5 class="card-title">{{.Title}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">ID:{{.ID}}</h6>

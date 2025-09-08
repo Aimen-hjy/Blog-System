@@ -78,6 +78,17 @@ func dashboardGetHandler(c *gin.Context) {
 		"Posts": PostInfo,
 	})
 }
+func dashboardPostHandler(c *gin.Context) {
+	edit := c.PostForm("edit")
+	delete_ := c.PostForm("delete")
+	if edit == "" {
+		id, _ := strconv.Atoi(delete_)
+		post.PostMgr.DeletePost(int64(id))
+	} else {
+		id, _ := strconv.Atoi(edit)
+		c.Redirect(http.StatusFound, fmt.Sprintf("/editpost?id=%d", id))
+	}
+}
 func createGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "createpost.html", gin.H{})
 }
@@ -93,6 +104,28 @@ func createPostHandler(c *gin.Context) {
 		c.HTML(http.StatusOK, "createpost.html", gin.H{"Success": fmt.Sprintf("Post created successfully! Post ID: %d", postID)})
 	} else {
 		c.HTML(http.StatusOK, "createpost.html", gin.H{"Error": "Failed to create post."})
+	}
+}
+func editGetHandler(c *gin.Context) {
+	id := c.Query("id")
+	ID, _ := strconv.Atoi(id)
+	title, content, _ := post.PostMgr.ViewPost(int64(ID))
+	c.HTML(http.StatusOK, "editpost.html", gin.H{"Title": title, "Content": content})
+}
+func editPostHandler(c *gin.Context) {
+	id := c.Query("id")
+	ID, _ := strconv.Atoi(id)
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	if title == "" || content == "" {
+		c.HTML(http.StatusOK, "editpost.html", gin.H{"Error": "Title and content cannot be empty.", "Title": title, "Content": content})
+		return
+	}
+	if post.PostMgr.UpdatePost(int64(ID), title, content) {
+		c.Header("Refresh", "3;url=/dashboard")
+		c.HTML(http.StatusOK, "editpost.html", gin.H{"Success": "Post updated successfully!", "Title": title, "Content": content})
+	} else {
+		c.HTML(http.StatusOK, "editpost.html", gin.H{"Error": "Failed to update post.", "Title": title, "Content": content})
 	}
 }
 func main() {
@@ -115,6 +148,10 @@ func main() {
 	r.POST("/changepassword", changePasswordPostHandler)
 	r.GET("/createpost", createGetHandler)
 	r.POST("/createpost", createPostHandler)
+	r.POST("/dashboard", dashboardPostHandler)
+	r.GET("/editpost", editGetHandler)
+	r.POST("/editpost", editPostHandler)
+
 	r.Run(":8080")
 	return
 }

@@ -103,9 +103,10 @@
                     }
                 }, 3000);
             </script>
-            {{else}}
+            {{end}}
+            {{if .Success}}
             <div class= "alert alert-success" role="alert" id="successAlert">
-                Create blog successfully!
+                {{.Success}}
             </div>
             <script>
                 setTimeout(function() {
