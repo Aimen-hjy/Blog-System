@@ -72,14 +72,29 @@ func dashboradGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	//TODO:Dashboard
 }
-func blogGetHandler(c *gin.Context) {
-	//TODO:Blog page
+func createGetHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "createpost.html", gin.H{})
+}
+func createPostHandler(c *gin.Context) {
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	if title == "" || content == "" {
+		c.HTML(http.StatusOK, "createpost.html", gin.H{"Error": "Title and content cannot be empty."})
+		return
+	}
+	if postID, ok := post.PostMgr.CreatePost(title, content); ok {
+		c.Header("Refresh", "3;url=/dashboard")
+		c.HTML(http.StatusOK, "createpost.html", gin.H{"Success": fmt.Sprintf("Post created successfully! Post ID: %d", postID)})
+	} else {
+		c.HTML(http.StatusOK, "createpost.html", gin.H{"Error": "Failed to create post."})
+	}
 }
 func main() {
 	post.PostMgr.Init()
 	defer post.PostMgr.CloseDatabase()
 	user.UserMgr.Init()
 	defer user.UserMgr.CloseDatabase()
+	go cmd()
 	r := gin.Default()
 	r.LoadHTMLGlob("template/*")
 	r.Static("/static", "./static")
@@ -92,7 +107,8 @@ func main() {
 	r.POST("/logout", logoutPostHandler)
 	r.GET("/changepassword", changePasswordGetHandler)
 	r.POST("/changepassword", changePasswordPostHandler)
-
+	r.GET("/createpost", createGetHandler)
+	r.POST("/createpost", createPostHandler)
 	r.Run(":8080")
 	return
 }
