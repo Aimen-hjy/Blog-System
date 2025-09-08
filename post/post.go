@@ -48,20 +48,20 @@ func (PostMgr *PostManager) CloseDatabase() {
 	sqlDB, _ := PostMgr.dataBase.DB()
 	sqlDB.Close()
 }
-func (PostMgr *PostManager) ViewPost(postID int64) (string, bool) {
+func (PostMgr *PostManager) ViewPost(postID int64) (string, string, bool) {
 	var post Post
 	post.ID = postID
 	result := PostMgr.dataBase.First(&post)
 	if result.Error == gorm.ErrRecordNotFound {
 		log.Println("Post Not Found")
-		return "", false
+		return "", "", false
 	}
 	if post.UserID != user.UserMgr.GetCurrentUser().ID {
 		log.Println("It's not your post")
-		return "", false
+		return "", "", false
 	}
 	log.Println("Post Viewed:", post)
-	return post.Content, true
+	return post.Title, post.Content, true
 }
 func (PostMgr *PostManager) CreatePost(title, content string) (int64, bool) {
 	var maxID int64
