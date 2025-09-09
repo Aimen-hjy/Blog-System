@@ -81,13 +81,68 @@ func dashboardGetHandler(c *gin.Context) {
 func dashboardPostHandler(c *gin.Context) {
 	edit := c.PostForm("edit")
 	delete_ := c.PostForm("delete")
-	if edit == "" {
+	if delete_ != "" {
 		id, _ := strconv.Atoi(delete_)
 		post.PostMgr.DeletePost(int64(id))
 		c.Redirect(http.StatusFound, "/dashboard")
-	} else {
+	} else if edit != "" {
 		id, _ := strconv.Atoi(edit)
 		c.Redirect(http.StatusFound, fmt.Sprintf("/editpost?id=%d", id))
+	} else {
+		searchInput := c.PostForm("searchInput")
+		searchBy := c.PostForm("searchType")
+		if searchBy == "t" {
+			Posts := post.PostMgr.SearchPostsByTitle(searchInput)
+			PostInfo := make([]post.PostInfo, len(Posts))
+			for index, post_ := range Posts {
+				PostInfo[index] = post_.ToPostInfo()
+			}
+			c.HTML(http.StatusOK, "dashboard.html", gin.H{
+				"Posts": PostInfo,
+			})
+		} else if searchBy == "ct" {
+			createTime := strings.Split(searchInput, "-")
+			year, _ := strconv.Atoi(createTime[0])
+			month, _ := strconv.Atoi(createTime[1])
+			day, _ := strconv.Atoi(createTime[2])
+			Posts := post.PostMgr.SearchPostsByCreateTime(year, month, day)
+			PostInfo := make([]post.PostInfo, len(Posts))
+			for index, post_ := range Posts {
+				PostInfo[index] = post_.ToPostInfo()
+			}
+			c.HTML(http.StatusOK, "dashboard.html", gin.H{
+				"Posts": PostInfo,
+			})
+		} else if searchBy == "ut" {
+			updateTime := strings.Split(searchInput, "-")
+			year, _ := strconv.Atoi(updateTime[0])
+			month, _ := strconv.Atoi(updateTime[1])
+			day, _ := strconv.Atoi(updateTime[2])
+			Posts := post.PostMgr.SearchPostsByUpdateTime(year, month, day)
+			PostInfo := make([]post.PostInfo, len(Posts))
+			for index, post_ := range Posts {
+				PostInfo[index] = post_.ToPostInfo()
+			}
+			c.HTML(http.StatusOK, "dashboard.html", gin.H{
+				"Posts": PostInfo,
+			})
+		} else if searchBy == "i" {
+			id, err := strconv.Atoi(searchInput)
+			if err != nil {
+				c.HTML(http.StatusOK, "dashboard.html", gin.H{})
+				return
+			}
+			Posts := post.PostMgr.SearchPostsById(int64(id))
+			PostInfo := make([]post.PostInfo, len(Posts))
+			for index, post_ := range Posts {
+				PostInfo[index] = post_.ToPostInfo()
+			}
+			c.HTML(http.StatusOK, "dashboard.html", gin.H{
+				"Posts": PostInfo,
+			})
+		} else {
+			c.Redirect(http.StatusFound, "/dashboard")
+		}
 	}
 }
 func createGetHandler(c *gin.Context) {

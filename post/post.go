@@ -148,3 +148,9 @@ func (PostMgr *PostManager) SearchPostsByUpdateTime(year, month, day int) []Post
 	log.Println("Search by update time:", date)
 	return posts
 }
+func (PostMgr *PostManager) SearchPostsById(id int64) []Post {
+	var posts []Post
+	PostMgr.dataBase.Where("id = ? AND user_id = ?", id, user.UserMgr.GetCurrentUser().ID).Find(&posts)
+	log.Println("Search by id:", id)
+	return posts
+}
