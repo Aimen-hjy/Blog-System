@@ -107,3 +107,18 @@ func (UsrMgr *UserManager) GetUserCount() int64 {
 	UsrMgr.dataBase.Model(&User{}).Count(&count)
 	return count
 }
+func (UsrMgr *UserManager) SetCurrentUserByName(name string) bool {
+	var user User
+	result := UsrMgr.dataBase.Where("name = ?", name).First(&user)
+	if result.Error == gorm.ErrRecordNotFound {
+		log.Println("User not found:", name)
+		return false
+	}
+	if result.Error != nil {
+		log.Println("Error during setting current user:", result.Error)
+		return false
+	}
+	UsrMgr.currentUser = &user
+	log.Println("Current user set to:", name)
+	return true
+}

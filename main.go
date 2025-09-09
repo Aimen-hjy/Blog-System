@@ -14,8 +14,13 @@ import (
 )
 
 func indexHandler(c *gin.Context) {
-	c.Redirect(http.StatusFound, "/login")
-	//TODO:Remember account
+	username, err := c.Cookie("username")
+	if err != nil || username == "" {
+		c.Redirect(http.StatusFound, "/login")
+	} else {
+		user.UserMgr.SetCurrentUserByName(username)
+		c.Redirect(http.StatusFound, "/dashboard")
+	}
 }
 func loginGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", gin.H{})
@@ -24,8 +29,12 @@ func loginPostHandler(c *gin.Context) {
 	option := c.PostForm("option")
 	username := c.PostForm("name")
 	password := c.PostForm("password")
+	remember := c.PostForm("remember")
 	if option == "login" {
 		if user.UserMgr.Login(username, password) {
+			if remember == "remember-me" {
+				c.SetCookie("username", username, 3600*24*30, "/", "localhost", false, true)
+			}
 			c.Header("Refresh", "3;url=/dashboard")
 		} else {
 			c.HTML(http.StatusOK, "login.html", gin.H{"Name": username, "Password": password, "Error": "Invalid username and password."})

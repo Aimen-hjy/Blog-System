@@ -22,13 +22,11 @@
     <input type="text" id="userName" class="form-control" name="name" value="{{.Name}}" placeholder="User Name" required autofocus>
     <label for="userPassword" class="sr-only">Password</label>
     <input type="password" id="userPassword" class="form-control" name="password" value="{{.Password}}" placeholder="Password" required>
-    <!--//TODO: Remember function
     <div class="checkbox mb-3">
         <label>
-            <input type="checkbox" value="remember-me"> Remember me
+            <input type="checkbox" name="remember" value="remember-me"> Remember me
         </label>
     </div>
-    -->
     {{if .Error}}
     <div class="alert alert-danger" role="alert">
         {{.Error}}
